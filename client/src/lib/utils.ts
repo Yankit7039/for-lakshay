@@ -26,13 +26,37 @@ export function formatDate(date: Date | string): string {
 
 export function formatImageUrl(url: string | null | undefined): string {
   if (!url) return "";
-  if (url.startsWith("http")) return url;
+  if (url.startsWith("data:")) return url; // Handle data URLs (base64)
+  if (url.startsWith("http")) {
+    // If it's already a complete URL, return as-is
+    if (url.includes("unsplash.com")) {
+      // For Unsplash URLs, add optimization parameters if not already present
+      if (url.includes("?")) {
+        return `${url}&auto=format&fit=crop&w=800&h=800`;
+      } else {
+        return `${url}?auto=format&fit=crop&w=800&h=800`;
+      }
+    }
+    return url;
+  }
   return `${url}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800`;
 }
 
 export function formatThumbnailUrl(url: string | null | undefined): string {
   if (!url) return "";
-  if (url.startsWith("http")) return url;
+  if (url.startsWith("data:")) return url; // Handle data URLs (base64)
+  if (url.startsWith("http")) {
+    // If it's already a complete URL, return as-is
+    if (url.includes("unsplash.com")) {
+      // For Unsplash URLs, add optimization parameters if not already present
+      if (url.includes("?")) {
+        return `${url}&auto=format&fit=crop&w=100&h=100`;
+      } else {
+        return `${url}?auto=format&fit=crop&w=100&h=100`;
+      }
+    }
+    return url;
+  }
   return `${url}?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100`;
 }
 

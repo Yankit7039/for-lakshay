@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { X, ChevronLeft, ChevronRight, Mail, Share2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Mail, Share2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { useItem } from "@/hooks/use-items";
+import { useItem, useDeleteItem } from "@/hooks/use-items";
 import { formatDate, formatImageUrl, formatThumbnailUrl, capitalizeFirst } from "@/lib/utils";
 
 interface ItemDetailModalProps {
@@ -16,6 +16,7 @@ interface ItemDetailModalProps {
 export default function ItemDetailModal({ itemId, onClose }: ItemDetailModalProps) {
   const { toast } = useToast();
   const { data: item, isLoading, error } = useItem(itemId);
+  const deleteItemMutation = useDeleteItem();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Get all images (cover + additional)
@@ -67,6 +68,31 @@ export default function ItemDetailModal({ itemId, onClose }: ItemDetailModalProp
       title: "Enquiry Sent!",
       description: "Your enquiry has been sent successfully. We'll get back to you soon.",
     });
+  };
+
+  const handleDelete = async () => {
+    if (!item) return;
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${item.name}"? This action cannot be undone.`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      await deleteItemMutation.mutateAsync(itemId);
+      toast({
+        title: "Item Deleted",
+        description: "The item has been successfully deleted from your inventory.",
+      });
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete item. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleShare = async () => {
@@ -291,6 +317,15 @@ export default function ItemDetailModal({ itemId, onClose }: ItemDetailModalProp
                         <Share2 className="mr-2 h-4 w-4" />
                         Share Item
                       </Button>
+                      {/* <Button
+                        variant="destructive"
+                        className="flex-1 transition-colors"
+                        onClick={handleDelete}
+                        disabled={deleteItemMutation.isPending}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {deleteItemMutation.isPending ? "Deleting..." : "Delete Item"}
+                      </Button> */}
                     </div>
                   </div>
                 </div>

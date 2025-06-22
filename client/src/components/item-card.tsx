@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
 import { formatDate, formatImageUrl, capitalizeFirst } from "@/lib/utils";
+import { useDeleteItem } from "@/hooks/use-items";
+import { useToast } from "@/hooks/use-toast";
 import type { Item } from "@shared/schema";
 
 interface ItemCardProps {
@@ -13,6 +15,32 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, viewMode, onClick }: ItemCardProps) {
   const imageUrl = formatImageUrl(item.coverImage);
+  const deleteItemMutation = useDeleteItem();
+  const { toast } = useToast();
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening the modal
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${item.name}"? This action cannot be undone.`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      await deleteItemMutation.mutateAsync(item.id);
+      toast({
+        title: "Item Deleted",
+        description: "The item has been successfully deleted from your inventory.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to delete item. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (viewMode === "list") {
     return (
@@ -52,9 +80,20 @@ export default function ItemCard({ item, viewMode, onClick }: ItemCardProps) {
                 <span className="text-xs text-gray-400">
                   {formatDate(item.dateAdded)}
                 </span>
-                <Button variant="ghost" size="sm" className="text-primary hover:text-primary-700">
-                  Enquire <ArrowRight className="ml-1 h-3 w-3" />
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary-700">
+                    Enquire <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={handleDelete}
+                    disabled={deleteItemMutation.isPending}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -82,6 +121,15 @@ export default function ItemCard({ item, viewMode, onClick }: ItemCardProps) {
             {capitalizeFirst(item.type.replace("-", " "))}
           </Badge>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white bg-opacity-90 hover:bg-opacity-100 text-red-600 hover:text-red-700 hover:bg-red-50"
+          onClick={handleDelete}
+          disabled={deleteItemMutation.isPending}
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
       </div>
       
       <CardContent className="p-4">
@@ -94,9 +142,20 @@ export default function ItemCard({ item, viewMode, onClick }: ItemCardProps) {
           <span className="text-xs text-gray-400">
             {formatDate(item.dateAdded)}
           </span>
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary-700">
-            Enquire <ArrowRight className="ml-1 h-3 w-3" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" className="text-primary hover:text-primary-700">
+              Enquire <ArrowRight className="ml-1 h-3 w-3" />
+            </Button>
+            {/* <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={handleDelete}
+              disabled={deleteItemMutation.isPending}
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button> */}
+          </div>
         </div>
       </CardContent>
     </Card>
