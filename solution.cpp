@@ -1,8 +1,3 @@
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
-
 class Solution {
 public:
     int checkValidString(string s, vector<int> counts) {
@@ -65,27 +60,3 @@ private:
         return false;
     }
 };
-
-int main() {
-    Solution sol;
-    
-    // Test case 1: s = "B", counts = [1,0,0,0]
-    cout << "Test 1: " << sol.checkValidString("B", {1, 0, 0, 0}) << endl;
-    // Expected: 0 (because we have count for A but string is B)
-    
-    // Test case 2: s = "ABAB", counts = [1,1,0,1]
-    cout << "Test 2: " << sol.checkValidString("ABAB", {1, 1, 0, 1}) << endl;
-    // Expected: 1 (A + BA + B = ABAB)
-    
-    // Additional test cases
-    cout << "Test 3: " << sol.checkValidString("A", {1, 0, 0, 0}) << endl;
-    // Expected: 1
-    
-    cout << "Test 4: " << sol.checkValidString("AB", {0, 0, 1, 0}) << endl;
-    // Expected: 1
-    
-    cout << "Test 5: " << sol.checkValidString("AABB", {2, 2, 0, 0}) << endl;
-    // Expected: 1
-    
-    return 0;
-}
