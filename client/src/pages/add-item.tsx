@@ -239,7 +239,11 @@ export default function AddItemPage() {
               <CardContent>
                 <ImageUpload
                   value={coverImage}
-                  onChange={setCoverImage}
+                  onChange={(value) => {
+                    if (typeof value === 'string' || value === null) {
+                      setCoverImage(value);
+                    }
+                  }}
                   title="Upload Cover Image"
                   description="Drag and drop your image here, or click to browse"
                   subtitle="PNG, JPG, GIF up to 10MB"
@@ -259,7 +263,11 @@ export default function AddItemPage() {
               <CardContent>
                 <ImageUpload
                   value={additionalImages}
-                  onChange={setAdditionalImages}
+                  onChange={(value) => {
+                    if (Array.isArray(value) || value === null) {
+                      setAdditionalImages(Array.isArray(value) ? value : []);
+                    }
+                  }}
                   multiple
                   title="Add More Images"
                   description="Upload multiple images to showcase your item"

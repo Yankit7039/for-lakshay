@@ -23,9 +23,7 @@ export default function ImageUpload({
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    
+  const processFiles = (files: File[]) => {
     if (files.length === 0) return;
 
     // Validate file types
@@ -79,6 +77,11 @@ export default function ImageUpload({
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    processFiles(files);
 
     // Reset input
     if (fileInputRef.current) {
@@ -90,12 +93,8 @@ export default function ImageUpload({
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
     
-    // Simulate file input event
-    const inputEvent = {
-      target: { files }
-    } as React.ChangeEvent<HTMLInputElement>;
-    
-    handleFileSelect(inputEvent);
+    // Process dropped files directly
+    processFiles(files);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -159,7 +158,7 @@ export default function ImageUpload({
           {images.map((image, index) => (
             <div key={index} className="relative inline-block">
               <img
-                src={image}
+                src={typeof image === 'string' ? image : ''}
                 alt={`Preview ${index + 1}`}
                 className={`${
                   multiple ? "w-full h-24" : "w-32 h-32"
