@@ -83,14 +83,18 @@ int minDeletions(vector<int> arr) {
 
 // For submission, remove main function
 int main() {
+    // Test the specific case mentioned
+    vector<int> arr_test = {4};
+    cout << "Test case [4]: " << minDeletions(arr_test) << " (should be 0)" << endl;
+    
     vector<int> arr1 = {1, 5, 10};
-    cout << minDeletions(arr1) << endl; // Should output 0
+    cout << "Test case [1, 5, 10]: " << minDeletions(arr1) << endl;
     
     vector<int> arr2 = {1, 2, 6, 4, 3};
-    cout << minDeletions(arr2) << endl; // Should output 1
+    cout << "Test case [1, 2, 6, 4, 3]: " << minDeletions(arr2) << endl;
     
     vector<int> arr3 = {3, 4, 2, 5, 1};
-    cout << minDeletions(arr3) << endl; // Should output 1
+    cout << "Test case [3, 4, 2, 5, 1]: " << minDeletions(arr3) << endl;
     
     return 0;
 }
